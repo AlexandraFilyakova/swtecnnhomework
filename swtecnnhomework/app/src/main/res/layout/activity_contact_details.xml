@@ -75,7 +75,7 @@
             style="@style/ContactDetailsEditText"
             android:layout_width="match_parent"
             android:enabled="@{isEnable}"
-            android:inputType="textEmailAddress"
+            android:inputType="textWebEmailAddress"
             android:text="@{contact.email}" />
 
     </LinearLayout>

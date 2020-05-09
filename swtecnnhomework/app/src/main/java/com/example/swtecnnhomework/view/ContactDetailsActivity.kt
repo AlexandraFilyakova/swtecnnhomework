@@ -25,7 +25,7 @@ class ContactDetailsActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_contact_details)
 
         setSupportActionBar(toolbar)
-        supportActionBar?.subtitle = "Details"
+        supportActionBar?.subtitle = "Contact Details"
 
         isNewContact = intent.getBooleanExtra(IS_NEW_CONTACT, true)
         contact = intent.getSerializableExtra(CONTACT) as Contact?
@@ -58,7 +58,11 @@ class ContactDetailsActivity : AppCompatActivity() {
             R.id.save -> {
                 //Save
                 binding.isEnable = false
-                Toast.makeText(this, "Contact successfully saved", Toast.LENGTH_LONG).show()
+                if (isNewContact) {
+                    finish()
+                } else {
+                    Toast.makeText(this, "Contact successfully saved", Toast.LENGTH_LONG).show()
+                }
             }
         }
         return true
