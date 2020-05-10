@@ -48,7 +48,7 @@
             android:layout_width="match_parent"
             android:enabled="@{isEnable}"
             android:inputType="text"
-            android:text="@{contact.surname}" />
+            android:text="@{contact.lastname}" />
 
         <TextView
             style="@style/ContactDetailsTextView"

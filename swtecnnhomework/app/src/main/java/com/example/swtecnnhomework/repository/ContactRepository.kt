@@ -1,9 +1,85 @@
 package com.example.swtecnnhomework.repository
 
+import android.content.Context
 import com.example.swtecnnhomework.model.Contact
+import org.json.JSONArray
+import java.io.IOException
+import java.io.InputStream
+import java.lang.RuntimeException
 
-class ContactRepository: IContactRepository {
-    override fun getAllContacts(): Array<Contact> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+class ContactRepository(var context: Context) {
+
+    private var contacts: ArrayList<Contact>? = null
+
+    init {
+    }
+
+    private fun loadContacts() {
+        val fileContent: String
+        try {
+            val assetManager = context.assets
+            val stream: InputStream = assetManager.open("contacts_data.json")
+            val size: Int = stream.available()
+            val buffer = ByteArray(size)
+            stream.read(buffer)
+            stream.close()
+            fileContent = String(buffer)
+        } catch (e: IOException) {
+            throw RuntimeException(e)
+        }
+        contacts = parseJsonToContacts(fileContent)
+        contacts?.let { array ->
+            array.sortedBy { it.lastname }
+        }
+    }
+
+    private fun parseJsonToContacts(json: String): ArrayList<Contact> {
+        val contacts: ArrayList<Contact> = arrayListOf<Contact>()
+        val jsonArray = JSONArray(json)
+        for (i in 0 until jsonArray.length()) {
+            val obj = jsonArray.getJSONObject(i)
+            contacts.add(Contact(id = i.toLong(),
+                    firstname = obj.getString(FIRSTNAME),
+                    lastname = obj.getString(LASTNAME),
+                    phone = obj.getString(PHONE),
+                    email = obj.getString(EMAIL))
+            )
+        }
+        return contacts
+    }
+
+    suspend fun getAllContacts(): ArrayList<Contact> {
+        if (contacts.isNullOrEmpty()) {
+            loadContacts()
+        }
+        return contacts ?: arrayListOf()
+    }
+
+    fun updateContact(newContact: Contact) : ArrayList<Contact> {
+        if (contacts!!.find { contact -> contact.id == newContact.id } != null) {
+            contacts!!.find { contact -> contact.id == newContact.id }?.let {
+                it.apply {
+                    this.firstname = newContact.firstname
+                    this.lastname = newContact.lastname
+                    this.phone = newContact.phone
+                    this.email = newContact.email
+                }
+            }
+        } else {
+            contacts?.add(Contact(contacts!!.size.toLong(),
+                    newContact.firstname, newContact.lastname, newContact.phone, newContact.email))
+        }
+        return contacts!!
+    }
+
+    companion object {
+        private const val FIRSTNAME = "firstname"
+        private const val LASTNAME = "lastname"
+        private const val PHONE = "phone"
+        private const val EMAIL = "email"
+
+        fun getInstance(context: Context): ContactRepository {
+            return ContactRepository(context)
+        }
     }
 }

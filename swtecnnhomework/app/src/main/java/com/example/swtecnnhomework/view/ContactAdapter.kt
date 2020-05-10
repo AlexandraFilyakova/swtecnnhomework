@@ -4,7 +4,6 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.swtecnnhomework.R
 import com.example.swtecnnhomework.model.Contact
@@ -12,12 +11,20 @@ import kotlinx.android.synthetic.main.contact_item_layout.view.infoButton
 import kotlinx.android.synthetic.main.contact_item_layout.view.nameTextView
 import kotlinx.android.synthetic.main.contact_item_layout.view.phoneTextView
 
-class ContactAdapter(private val context: Context, private val contacts: Array<Contact>) :
+class ContactAdapter(private val context: Context) :
     RecyclerView.Adapter<ContactAdapter.ContactViewHolder>() {
+
+    private var contacts = arrayListOf<Contact>()
 
     private var listener: ContactAdapterListener? = null
     fun setContactAdapterListener(listener: ContactAdapterListener) {
         this.listener = listener
+    }
+
+    fun setContacts(newContacts: ArrayList<Contact>) {
+        contacts.clear()
+        contacts.addAll(newContacts)
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
@@ -52,7 +59,7 @@ class ContactAdapter(private val context: Context, private val contacts: Array<C
 
         fun setContact(contact: Contact) {
             currentContact = contact
-            itemView.nameTextView.text = contact.firstname + " " + contact.surname
+            itemView.nameTextView.text = contact.firstname + " " + contact.lastname
             itemView.phoneTextView.text = contact.phone
         }
     }

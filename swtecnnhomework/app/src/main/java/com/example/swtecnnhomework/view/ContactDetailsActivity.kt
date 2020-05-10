@@ -1,5 +1,6 @@
 package com.example.swtecnnhomework.view
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -52,25 +53,31 @@ class ContactDetailsActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.edit -> {
-                //Edit
                 binding.isEnable = true
             }
             R.id.save -> {
-                //Save
                 binding.isEnable = false
-                if (isNewContact) {
-                    finish()
-                } else {
-                    Toast.makeText(this, "Contact successfully saved", Toast.LENGTH_LONG).show()
+                val intent = Intent().apply {
+                    putExtra(UPDATED_CONTACT, getContactData())
                 }
+                setResult(Activity.RESULT_OK, intent)
+                finish()
             }
         }
         return true
     }
 
+    private fun getContactData() = Contact(contact?.id
+            ?: 0, //Default id. It will be update in repository
+            binding.nameEditText.text.toString(),
+            binding.surnameEditText.text.toString(),
+            binding.phoneEditText.text.toString(),
+            binding.emailEditText.text.toString())
+
     companion object {
         private const val CONTACT = "CONTACT"
         private const val IS_NEW_CONTACT = "IS_NEW_CONTACT"
+        public const val UPDATED_CONTACT = "UPDATED_CONTACT"
 
         fun getDetailsIntent(context: Context, isNewContact: Boolean, contact: Contact?): Intent {
             return Intent(context, ContactDetailsActivity::class.java).apply {

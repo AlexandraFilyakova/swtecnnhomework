@@ -4,6 +4,8 @@ import com.example.swtecnnhomework.model.Contact
 
 interface IContactRepository {
 
-    fun getAllContacts(): Array<Contact>
+    suspend fun getAllContacts(): ArrayList<Contact>
+
+    fun addContact(contact: Contact)
 
 }
