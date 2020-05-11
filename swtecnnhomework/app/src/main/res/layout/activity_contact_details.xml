@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <variable
+            name="contact"
+            type="com.example.swtecnnhomework.model.Contact" />
+
+        <variable
+            name="isEnable"
+            type="Boolean" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            style="@style/Toolbar"
+            android:layout_width="match_parent" />
+
+        <TextView
+            style="@style/ContactDetailsTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/name" />
+
+        <EditText
+            android:id="@+id/nameEditText"
+            style="@style/ContactDetailsEditText"
+            android:layout_width="match_parent"
+            android:enabled="@{isEnable}"
+            android:inputType="text"
+            android:text="@{contact.firstname}" />
+
+        <TextView
+            style="@style/ContactDetailsTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/surname" />
+
+        <EditText
+            android:id="@+id/surnameEditText"
+            style="@style/ContactDetailsEditText"
+            android:layout_width="match_parent"
+            android:enabled="@{isEnable}"
+            android:inputType="text"
+            android:text="@{contact.lastname}" />
+
+        <TextView
+            style="@style/ContactDetailsTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/phone" />
+
+        <EditText
+            android:id="@+id/phoneEditText"
+            style="@style/ContactDetailsEditText"
+            android:layout_width="match_parent"
+            android:enabled="@{isEnable}"
+            android:inputType="phone"
+            android:text="@{contact.phone}" />
+
+        <TextView
+            style="@style/ContactDetailsTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/email" />
+
+        <EditText
+            android:id="@+id/emailEditText"
+            style="@style/ContactDetailsEditText"
+            android:layout_width="match_parent"
+            android:enabled="@{isEnable}"
+            android:inputType="textWebEmailAddress"
+            android:text="@{contact.email}" />
+
+    </LinearLayout>
+</layout>

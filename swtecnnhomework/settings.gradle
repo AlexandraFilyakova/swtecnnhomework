@@ -1,0 +1,2 @@
+rootProject.name='SWTecNNHomework'
+include ':app'

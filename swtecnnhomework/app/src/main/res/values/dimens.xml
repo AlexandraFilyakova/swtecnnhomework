@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="toolbar_height">70dp</dimen>
+    <dimen name="search_bar_height">50dp</dimen>
+    <dimen name="contact_item_margin">10dp</dimen>
+    <dimen name="contact_text_view_margin">5dp</dimen>
+    <dimen name="button_radius">5dp</dimen>
+    <dimen name="clear_button_size">20dp</dimen>
+    <dimen name="contact_text_size">17sp</dimen>
+    <dimen name="contact_details_start_end_margin">20dp</dimen>
+    <dimen name="contact_details_textview_top_margin">10dp</dimen>
+    <dimen name="contact_details_textview_bottom_margin">5dp</dimen>
+    <dimen name="contact_details_edittext_bottom_margin">15dp</dimen>
+    <dimen name="contact_details_edit_text_height">40dp</dimen>
+</resources>
