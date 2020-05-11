@@ -11,8 +11,7 @@ import kotlinx.android.synthetic.main.contact_item_layout.view.infoButton
 import kotlinx.android.synthetic.main.contact_item_layout.view.nameTextView
 import kotlinx.android.synthetic.main.contact_item_layout.view.phoneTextView
 
-class ContactAdapter(private val context: Context) :
-    RecyclerView.Adapter<ContactAdapter.ContactViewHolder>() {
+class ContactAdapter(private val context: Context) : RecyclerView.Adapter<ContactAdapter.ContactViewHolder>() {
 
     private var contacts = arrayListOf<Contact>()
 
@@ -28,13 +27,13 @@ class ContactAdapter(private val context: Context) :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-        ContactViewHolder(
-            LayoutInflater.from(context).inflate(
-                R.layout.contact_item_layout,
-                parent,
-                false
+            ContactViewHolder(
+                    LayoutInflater.from(context).inflate(
+                            R.layout.contact_item_layout,
+                            parent,
+                            false
+                    )
             )
-        )
 
     override fun getItemCount() = contacts.size
 

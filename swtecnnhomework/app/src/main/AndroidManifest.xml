@@ -11,7 +11,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".view.ContactListActivity">
+        <activity android:name=".view.ContactListActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -19,7 +20,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".view.ContactDetailsActivity"
-            android:screenOrientation="fullSensor"/>
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

@@ -13,6 +13,7 @@ import com.example.swtecnnhomework.R
 import com.example.swtecnnhomework.databinding.ActivityContactDetailsBinding
 import com.example.swtecnnhomework.model.Contact
 import kotlinx.android.synthetic.main.activity_contact_details.*
+import java.lang.Exception
 
 class ContactDetailsActivity : AppCompatActivity() {
 
@@ -23,10 +24,11 @@ class ContactDetailsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_contact_details)
 
         setSupportActionBar(toolbar)
-        supportActionBar?.subtitle = "Contact Details"
+        supportActionBar?.subtitle = getString(R.string.contact_details)
 
         isNewContact = intent.getBooleanExtra(IS_NEW_CONTACT, true)
         contact = intent.getSerializableExtra(CONTACT) as Contact?
@@ -36,10 +38,6 @@ class ContactDetailsActivity : AppCompatActivity() {
         } else {
             binding.isEnable = true
         }
-    }
-
-    override fun onBackPressed() {
-        super.onBackPressed()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -56,28 +54,42 @@ class ContactDetailsActivity : AppCompatActivity() {
                 binding.isEnable = true
             }
             R.id.save -> {
-                binding.isEnable = false
-                val intent = Intent().apply {
-                    putExtra(UPDATED_CONTACT, getContactData())
+                try {
+                    val intent = Intent().apply {
+                        putExtra(UPDATED_CONTACT, getContactData())
+                    }
+                    setResult(Activity.RESULT_OK, intent)
+                    finish()
+                } catch (ex: BlankTextException) {
+                    Toast.makeText(this, "Please, fill blank fields!", Toast.LENGTH_LONG).show()
                 }
-                setResult(Activity.RESULT_OK, intent)
-                finish()
             }
         }
         return true
     }
 
-    private fun getContactData() = Contact(contact?.id
-            ?: 0, //Default id. It will be update in repository
-            binding.nameEditText.text.toString(),
-            binding.surnameEditText.text.toString(),
-            binding.phoneEditText.text.toString(),
-            binding.emailEditText.text.toString())
+    private fun getContactData(): Contact? {
+        return if (binding.nameEditText.text.isNullOrBlank()
+                || binding.surnameEditText.text.isNullOrBlank()
+                || binding.phoneEditText.text.isNullOrBlank()
+                || binding.emailEditText.text.isNullOrBlank()) {
+            throw BlankTextException()
+        } else {
+            Contact(contact?.id ?: -1, //Default id. It will be update in repository
+                    binding.nameEditText.text.toString(),
+                    binding.surnameEditText.text.toString(),
+                    binding.phoneEditText.text.toString(),
+                    binding.emailEditText.text.toString())
+        }
+    }
+
+    inner class BlankTextException : Exception() {
+    }
 
     companion object {
         private const val CONTACT = "CONTACT"
         private const val IS_NEW_CONTACT = "IS_NEW_CONTACT"
-        public const val UPDATED_CONTACT = "UPDATED_CONTACT"
+        const val UPDATED_CONTACT = "UPDATED_CONTACT"
 
         fun getDetailsIntent(context: Context, isNewContact: Boolean, contact: Contact?): Intent {
             return Intent(context, ContactDetailsActivity::class.java).apply {

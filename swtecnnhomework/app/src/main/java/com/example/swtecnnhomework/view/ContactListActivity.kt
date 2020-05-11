@@ -7,24 +7,23 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.swtecnnhomework.R
 import com.example.swtecnnhomework.model.Contact
 import com.example.swtecnnhomework.repository.ContactRepository
 import kotlinx.android.synthetic.main.activity_contact_list.*
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import java.lang.Exception
 
 
@@ -44,15 +43,36 @@ class ContactListActivity : AppCompatActivity(), ContactAdapter.ContactAdapterLi
         setContentView(R.layout.activity_contact_list)
 
         setSupportActionBar(toolbar)
-        supportActionBar?.subtitle = "List of Contacts"
+        supportActionBar?.subtitle = getString(R.string.list_of_contacts)
 
         requestCallPhonePermission()
+
+        contactRepository = ContactRepository.getInstance(this)
 
         contactList.layoutManager = LinearLayoutManager(this)
         contactList.adapter = ContactAdapter(this)
         (contactList.adapter as ContactAdapter).setContactAdapterListener(this)
 
-        contactRepository = ContactRepository.getInstance(this)
+        searchEditText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (!s.isNullOrBlank()) {
+                    if (s.length >= MIN_SEARCH_LENGTH) {
+                        loadSearchContacts(searchText = s.toString())
+                    }
+                } else {
+                    loadContacts()
+                }
+            }
+
+            override fun afterTextChanged(s: Editable) {}
+        })
+
+        clearButton.setOnClickListener {
+            searchEditText.setText("")
+            loadContacts()
+        }
     }
 
     override fun onResume() {
@@ -66,6 +86,23 @@ class ContactListActivity : AppCompatActivity(), ContactAdapter.ContactAdapterLi
                 showProgressDialog(true)
                 GlobalScope.async { contactRepository.getAllContacts() }.await().let {
                     (contactList.adapter as ContactAdapter).setContacts(it)
+                    searchLayout.visibility = View.VISIBLE
+                }
+            } catch (ex: Exception) {
+                Toast.makeText(this@ContactListActivity, ex.message, Toast.LENGTH_LONG).show()
+            } finally {
+                showProgressDialog(false)
+            }
+        }
+    }
+
+    private fun loadSearchContacts(searchText: String) {
+        GlobalScope.launch(Dispatchers.Main) {
+            try {
+                showProgressDialog(true)
+                GlobalScope.async { contactRepository.getSearchResults(searchText) }.await().let {
+                    (contactList.adapter as ContactAdapter).setContacts(it)
+                    searchLayout.visibility = View.VISIBLE
                 }
             } catch (ex: Exception) {
                 Toast.makeText(this@ContactListActivity, ex.message, Toast.LENGTH_LONG).show()
@@ -82,7 +119,7 @@ class ContactListActivity : AppCompatActivity(), ContactAdapter.ContactAdapterLi
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.addContact) {
-            startActivity(ContactDetailsActivity.getDetailsIntent(this, true, null))
+            startActivityForResult(ContactDetailsActivity.getDetailsIntent(this, true, null), RC_HANDLE_DETAILS)
         }
         return true
     }
@@ -135,13 +172,10 @@ class ContactListActivity : AppCompatActivity(), ContactAdapter.ContactAdapterLi
         ActivityCompat.requestPermissions(this, permissions, RC_HANDLE_PHONE_CALL_PERM)
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    }
-
     companion object {
         private const val RC_HANDLE_PHONE_CALL_PERM = 56
         private const val RC_HANDLE_DETAILS = 77
+        private const val MIN_SEARCH_LENGTH = 3
     }
 
 }

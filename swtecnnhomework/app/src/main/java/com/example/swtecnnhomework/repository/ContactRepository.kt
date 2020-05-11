@@ -11,9 +11,6 @@ class ContactRepository(var context: Context) {
 
     private var contacts: ArrayList<Contact>? = null
 
-    init {
-    }
-
     private fun loadContacts() {
         val fileContent: String
         try {
@@ -28,9 +25,6 @@ class ContactRepository(var context: Context) {
             throw RuntimeException(e)
         }
         contacts = parseJsonToContacts(fileContent)
-        contacts?.let { array ->
-            array.sortedBy { it.lastname }
-        }
     }
 
     private fun parseJsonToContacts(json: String): ArrayList<Contact> {
@@ -48,28 +42,42 @@ class ContactRepository(var context: Context) {
         return contacts
     }
 
-    suspend fun getAllContacts(): ArrayList<Contact> {
+    fun getAllContacts(): ArrayList<Contact> {
         if (contacts.isNullOrEmpty()) {
             loadContacts()
         }
         return contacts ?: arrayListOf()
     }
 
-    fun updateContact(newContact: Contact) : ArrayList<Contact> {
-        if (contacts!!.find { contact -> contact.id == newContact.id } != null) {
-            contacts!!.find { contact -> contact.id == newContact.id }?.let {
-                it.apply {
-                    this.firstname = newContact.firstname
-                    this.lastname = newContact.lastname
-                    this.phone = newContact.phone
-                    this.email = newContact.email
-                }
+    fun getSearchResults(searchText: String): ArrayList<Contact> {
+        val searchContacts: ArrayList<Contact> = arrayListOf()
+        contacts?.forEach {
+            if (it.firstname.contains(searchText, true)
+                    || it.lastname.contains(searchText, true)
+                    || it.phone.contains(searchText, true)) {
+                searchContacts.add(it)
             }
-        } else {
-            contacts?.add(Contact(contacts!!.size.toLong(),
-                    newContact.firstname, newContact.lastname, newContact.phone, newContact.email))
         }
-        return contacts!!
+        return searchContacts
+    }
+
+    fun updateContact(newContact: Contact): ArrayList<Contact> {
+        contacts?.let { contacts ->
+            if (contacts.find { contact -> contact.id == newContact.id } != null) {
+                contacts.find { contact -> contact.id == newContact.id }?.let {
+                    it.apply {
+                        this.firstname = newContact.firstname
+                        this.lastname = newContact.lastname
+                        this.phone = newContact.phone
+                        this.email = newContact.email
+                    }
+                }
+            } else {
+                contacts.add(Contact(contacts.size.toLong(),
+                        newContact.firstname, newContact.lastname, newContact.phone, newContact.email))
+            }
+        }
+        return contacts ?: arrayListOf()
     }
 
     companion object {
